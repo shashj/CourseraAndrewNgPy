@@ -7,7 +7,7 @@ tags:
 - andrew
 - machine_learning
 created_at: 2018-08-15 00:00:00
-updated_at: 2018-08-15 14:08:16.522525
+updated_at: 2018-08-15 15:28:14.713716
 tldr: This is a python implementation of the week 2 exercise in Andrew ng's course
   for machine learning
 thumbnail: images/output_12_0.png
@@ -88,6 +88,8 @@ data_ext1[0:4]
 ```python
 X = np.c_[np.ones(data_ext1.shape[0]),data_ext1[:,0]]
 X[0:4]
+
+# A column of ones has been added to accomodate the theta0 term (intercept term)
 ```
 
 
@@ -138,3 +140,58 @@ import dill
 filename = 'globalsave.pkl'
 dill.dump_session(filename)
 ```
+## Gradient Descent
+
+### Compute Cost
+
+
+```python
+def computeCost(X, y, theta):
+    """
+    COMPUTECOST Compute cost for linear regression
+    J = COMPUTECOST(X, y, theta) computes the cost of using theta as the
+    parameter for linear regression to fit the data points in X and y
+    """
+    # Initialize some useful values
+    m = y.shape[0] # number of training examples
+    
+    
+    # We need to return the following variables correctly 
+    
+    J=0
+    
+    """
+    ====================== OUR CODE HERE ======================
+    Instructions: Compute the cost of a particular choice of theta
+    We should set J to the cost.
+    """
+    
+    J = np.sum(np.square(np.matmul(X,theta)-y))/(2*m)
+    
+    
+    return(J)
+    
+```
+
+```python
+computeCost(X,y,theta=[[0],[0]])
+```
+
+
+
+
+    32.072733877455676
+
+
+
+
+```python
+# Checking compute cost for one more value
+
+computeCost(X,y,theta=[[-1],[2]])
+```
+
+
+
+
+    54.24245508201238
