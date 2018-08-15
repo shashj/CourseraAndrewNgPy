@@ -7,7 +7,7 @@ tags:
 - andrew
 - machine_learning
 created_at: 2018-08-15 00:00:00
-updated_at: 2018-08-15 16:17:24.716551
+updated_at: 2018-08-15 19:12:15.747738
 tldr: This is a python implementation of the week 2 exercise in Andrew ng's course
   for machine learning
 thumbnail: images/output_12_0.png
@@ -137,7 +137,7 @@ plt.ylabel('Profit in $10,000s');
 
 ```python
 import dill
-filename = 'globalsave.pkl'
+filename = 'ProgrammingExercise1.pkl'
 dill.dump_session(filename)
 ```
 ## Gradient Descent
@@ -285,3 +285,84 @@ predict2
 
 
     array([4.53424501])
+
+
+
+## Visualizing the results
+
+
+```python
+## Plotting the fitted line
+# Getting the relevant x and y coordinates
+
+xcoord = np.linspace(5,23)
+ycoord = theta[0] + theta[1]*xcoord # this is simply y = mx + c
+
+# Plot gradient descent
+plt.scatter(X[:,1], y, s=30, c='r', linewidths=1)
+plt.plot(xcoord,ycoord, label='Linear regression Gradient descent')
+```
+
+
+
+
+    [<matplotlib.lines.Line2D at 0x10da00f90>]
+
+
+
+
+
+![png](images/output_26_1.png)
+
+
+### Visualizing J(theta_0, theta_1)
+
+
+```python
+from mpl_toolkits.mplot3d import axes3d
+```
+
+```python
+# Grid over which we will calculate J
+
+theta0_vals = np.linspace(-10, 10, 100)
+theta1_vals = np.linspace(-1, 4, 100)
+
+Zvalues_J = np.zeros((theta0_vals.shape[0],theta1_vals.shape[0]))
+xxcoord, yycoord = np.meshgrid(theta0_vals, theta1_vals, indexing='xy') # my favourite function which has no such counterpart in R or maybe
+
+# Calculate Z-values (Cost) based on grid of coefficients
+for (i,j),v in np.ndenumerate(Zvalues_J):
+    Zvalues_J[i,j] = computeCost(X,y, theta=[[xxcoord[i,j]], [yycoord[i,j]]])
+    
+fig = plt.figure(figsize=(15,6))
+ax1 = fig.add_subplot(121)
+ax2 = fig.add_subplot(122, projection='3d')
+
+# Left plot
+CS = ax1.contour(xxcoord, yycoord, Zvalues_J, np.logspace(-2, 3, 20), cmap=plt.cm.jet)
+ax1.scatter(theta[0],theta[1], c='r')
+
+# Right plot
+ax2.plot_surface(xxcoord, yycoord, Zvalues_J, rstride=1, cstride=1, alpha=0.6, cmap=plt.cm.jet)
+ax2.set_zlabel('Cost')
+ax2.set_zlim(Zvalues_J.min(),Zvalues_J.max())
+ax2.view_init(elev=15, azim=230)
+
+# settings common to both plots
+for ax in fig.axes:
+    ax.set_xlabel(r'$\theta_0$', fontsize=17)
+    ax.set_ylabel(r'$\theta_1$', fontsize=17)
+```
+
+
+![png](images/output_29_0.png)
+
+
+
+```python
+# Saving checkpoint
+import dill
+filename = 'ProgrammingExercise1.pkl'
+dill.dump_session(filename)
+```
