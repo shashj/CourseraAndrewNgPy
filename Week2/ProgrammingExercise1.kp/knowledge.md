@@ -7,7 +7,7 @@ tags:
 - andrew
 - machine_learning
 created_at: 2018-08-15 00:00:00
-updated_at: 2018-08-15 19:12:15.747738
+updated_at: 2018-08-19 16:49:47.695742
 tldr: This is a python implementation of the week 2 exercise in Andrew ng's course
   for machine learning
 thumbnail: images/output_12_0.png
@@ -366,3 +366,171 @@ import dill
 filename = 'ProgrammingExercise1.pkl'
 dill.dump_session(filename)
 ```
+## Linear Regression with multiple variables
+
+
+```python
+## Reading the data
+
+data_ext2 = np.loadtxt("../ex1/ex1data2.txt", delimiter= ",")
+data_ext2[0:4]
+```
+
+
+
+
+    array([[2.104e+03, 3.000e+00, 3.999e+05],
+           [1.600e+03, 3.000e+00, 3.299e+05],
+           [2.400e+03, 3.000e+00, 3.690e+05],
+           [1.416e+03, 2.000e+00, 2.320e+05]])
+
+
+
+
+```python
+## Getting the X and y vector
+
+X_multi = np.c_[np.ones(data_ext2.shape[0]),data_ext2[:,[0,1]]]
+X_multi[0:4]
+```
+
+
+
+
+    array([[1.000e+00, 2.104e+03, 3.000e+00],
+           [1.000e+00, 1.600e+03, 3.000e+00],
+           [1.000e+00, 2.400e+03, 3.000e+00],
+           [1.000e+00, 1.416e+03, 2.000e+00]])
+
+
+
+
+```python
+y_multi = np.c_[data_ext2[:,2]]
+y_multi[0:4]
+```
+
+
+
+
+    array([[399900.],
+           [329900.],
+           [369000.],
+           [232000.]])
+
+
+
+
+```python
+#Plot feature one to find out its scales
+plt.grid(True)
+plt.hist(X_multi[:,2],label = 'col2')
+plt.xlabel('Column Value')
+plt.ylabel('Counts');
+```
+
+
+![png](images/output_35_0.png)
+
+
+
+```python
+plt.grid(True)
+plt.hist(X_multi[:,1],label = 'col2')
+plt.xlabel('Column Value')
+plt.ylabel('Counts');
+```
+
+
+![png](images/output_36_0.png)
+
+
+Clearly the data needs feature scaling and normalization
+
+
+```python
+from sklearn.preprocessing import scale
+```
+
+```python
+"""
+FEATURENORMALIZE Normalizes the features in X
+FEATURENORMALIZE(X) returns a normalized version of X where
+the mean value of each feature is 0 and the standard deviation
+is 1. This is often a good preprocessing step to do when
+working with learning algorithms.
+"""
+X_multi_Norm = scale( X_multi, axis=0, with_mean=True, with_std=True, copy=True )
+X_multi_Norm[:,0] = np.ones(data_ext2.shape[0])
+X_multi_Norm
+```
+
+
+
+
+    array([[ 1.00000000e+00,  1.31415422e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -5.09640698e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  5.07908699e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -7.43677059e-01, -1.55439190e+00],
+           [ 1.00000000e+00,  1.27107075e+00,  1.10220517e+00],
+           [ 1.00000000e+00, -1.99450507e-02,  1.10220517e+00],
+           [ 1.00000000e+00, -5.93588523e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -7.29685755e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -7.89466782e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -6.44465993e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -7.71822042e-02,  1.10220517e+00],
+           [ 1.00000000e+00, -8.65999486e-04, -2.26093368e-01],
+           [ 1.00000000e+00, -1.40779041e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  3.15099326e+00,  2.43050370e+00],
+           [ 1.00000000e+00, -9.31923697e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  3.80715024e-01,  1.10220517e+00],
+           [ 1.00000000e+00, -8.65782986e-01, -1.55439190e+00],
+           [ 1.00000000e+00, -9.72625673e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  7.73743478e-01,  1.10220517e+00],
+           [ 1.00000000e+00,  1.31050078e+00,  1.10220517e+00],
+           [ 1.00000000e+00, -2.97227261e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -1.43322915e-01, -1.55439190e+00],
+           [ 1.00000000e+00, -5.04552951e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -4.91995958e-02,  1.10220517e+00],
+           [ 1.00000000e+00,  2.40309445e+00, -2.26093368e-01],
+           [ 1.00000000e+00, -1.14560907e+00, -2.26093368e-01],
+           [ 1.00000000e+00, -6.90255715e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  6.68172729e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  2.53521350e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  8.09357707e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -2.05647815e-01, -1.55439190e+00],
+           [ 1.00000000e+00, -1.27280274e+00, -2.88269044e+00],
+           [ 1.00000000e+00,  5.00114703e-02,  1.10220517e+00],
+           [ 1.00000000e+00,  1.44532608e+00, -2.26093368e-01],
+           [ 1.00000000e+00, -2.41262044e-01,  1.10220517e+00],
+           [ 1.00000000e+00, -7.16966387e-01, -2.26093368e-01],
+           [ 1.00000000e+00, -9.68809863e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  1.67029651e-01,  1.10220517e+00],
+           [ 1.00000000e+00,  2.81647389e+00,  1.10220517e+00],
+           [ 1.00000000e+00,  2.05187753e-01,  1.10220517e+00],
+           [ 1.00000000e+00, -4.28236746e-01, -1.55439190e+00],
+           [ 1.00000000e+00,  3.01854946e-01, -2.26093368e-01],
+           [ 1.00000000e+00,  7.20322135e-01,  1.10220517e+00],
+           [ 1.00000000e+00, -1.01841540e+00, -2.26093368e-01],
+           [ 1.00000000e+00, -1.46104938e+00, -1.55439190e+00],
+           [ 1.00000000e+00, -1.89112638e-01,  1.10220517e+00],
+           [ 1.00000000e+00, -1.01459959e+00, -2.26093368e-01]])
+
+
+
+
+```python
+#Quick visualize the feature-normalized data
+plt.grid(True)
+plt.xlim([-5,5])
+dummy = plt.hist(X_multi_Norm[:,0],label = 'col1')
+dummy = plt.hist(X_multi_Norm[:,1],label = 'col2')
+dummy = plt.hist(X_multi_Norm[:,2],label = 'col3')
+plt.title('Feature Normalization Accomplished')
+plt.xlabel('Column Value')
+plt.ylabel('Counts')
+dummy = plt.legend()
+```
+
+
+![png](images/output_40_0.png)
