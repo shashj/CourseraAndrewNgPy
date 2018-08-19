@@ -7,7 +7,7 @@ tags:
 - andrew
 - machine_learning
 created_at: 2018-08-15 00:00:00
-updated_at: 2018-08-19 16:49:47.695742
+updated_at: 2018-08-19 22:23:50.918145
 tldr: This is a python implementation of the week 2 exercise in Andrew ng's course
   for machine learning
 thumbnail: images/output_12_0.png
@@ -534,3 +534,74 @@ dummy = plt.legend()
 
 
 ![png](images/output_40_0.png)
+
+
+
+```python
+## Check theta values as in the assignment
+
+initial_theta = np.zeros((X_multi_Norm.shape[1],1))
+
+theta_multi , Cost_Iterations_multi = gradientDescent(X_multi_Norm, y_multi, theta=initial_theta, alpha=0.01, num_iters=1500)
+
+print theta_multi
+```
+    [[340412.56301439]
+     [109370.05670466]
+     [ -6500.61509507]]
+
+
+
+```python
+plt.plot(Cost_Iterations_multi)
+plt.ylabel('Cost at each iteration')
+plt.xlabel('Iterations');
+```
+
+
+![png](images/output_42_0.png)
+
+
+
+```python
+# Computing cost at 1650 sq ft and 3 bedrooms
+X_multi_mean = np.mean(X_multi, axis=0)
+X_multi_std = np.std(X_multi, axis=0)
+ytest = np.array([1650.,3.])
+ytestscaled = [(ytest[x]-X_multi_mean[x+1])/X_multi_std[x+1] for x in xrange(len(ytest))]
+ytestscaled.insert(0,1)
+predict1_multi = np.matmul(ytestscaled ,theta_multi)
+predict1_multi
+```
+
+
+
+
+    array([293098.46667577])
+
+
+
+
+```python
+from numpy.linalg import inv
+#Implementation of normal equation to find analytic solution to linear regression
+def normEqtn(X,y):
+    #restheta = np.zeros((X.shape[1],1))
+    return np.dot(np.dot(inv(np.dot(X.T,X)),X.T),y)
+```
+
+```python
+print "Normal equation prediction for price of house with 1650 square feet and 3 bedrooms"
+print "$%0.2f" % float(np.matmul([1,1650.,3], normEqtn(X_multi,y_multi)))
+```
+    Normal equation prediction for price of house with 1650 square feet and 3 bedrooms
+    $293081.46
+
+
+
+```python
+# Saving checkpoint
+import dill
+filename = 'ProgrammingExercise1.pkl'
+dill.dump_session(filename)
+```
